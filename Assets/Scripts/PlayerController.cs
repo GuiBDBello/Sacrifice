@@ -9,30 +9,46 @@ public class PlayerController : MonoBehaviour
     public float GroundDistance = 0.2f;
     public float DashDistance = 5f;
     public LayerMask Ground;
-    public Transform GroundChecker;
     public GameObject Grenade;
     public float ThrowForce = 10f;
-
+    //public List<Collider> RagdollParts = new List<Collider>();
+    public GameObject Root;
+    
     private Rigidbody _body;
+    private Transform _groundChecker;
     private Vector3 _inputs = Vector3.zero;
     private bool _isGrounded = true;
     private int _grenadeQuantity = 0;
+    private Animator _animator;
+
+    private void Awake()
+    {
+        _animator = GetComponent<Animator>();
+        TriggerRagdoll(false);
+        //SetRagdollParts();
+        //SetColliderSpheres();
+    }
 
     private void Start()
     {
         _body = GetComponent<Rigidbody>();
+        _groundChecker = Root.transform;
     }
 
     private void Update()
     {
-        _isGrounded = Physics.CheckSphere(GroundChecker.position, GroundDistance, Ground, QueryTriggerInteraction.Ignore);
+        _isGrounded = Physics.CheckSphere(_groundChecker.position, GroundDistance, Ground, QueryTriggerInteraction.Ignore);
 
         _inputs = Vector3.zero;
         _inputs.x = Input.GetAxis("Horizontal");
         //_inputs.z = Input.GetAxis("Vertical");
         if (_inputs != Vector3.zero)
+        {
             transform.forward = _inputs;
-            
+        }
+        _animator.SetFloat("movement", _inputs.magnitude);
+        _animator.SetBool("isJumping", !_isGrounded);
+
         if (Input.GetKeyDown(KeyCode.Space) && _isGrounded)
             Jump();
         
@@ -41,8 +57,6 @@ public class PlayerController : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.Mouse0))
             ThrowGrenade();
-        
-        MovePlayerToStart();
     }
 
     private void FixedUpdate()
@@ -63,15 +77,6 @@ public class PlayerController : MonoBehaviour
         _body.AddForce(dashVelocity, ForceMode.VelocityChange);
     }
 
-    private void MovePlayerToStart()
-    {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            Vector3 startPosition = new Vector3(0, 1f, 0);
-            _body.MovePosition(startPosition);
-        }
-    }
-
     public void PickUpGrenade()
     {
         _grenadeQuantity++;
@@ -87,4 +92,34 @@ public class PlayerController : MonoBehaviour
             _grenadeQuantity--;
         }
     }
+
+    private void TriggerRagdoll(bool enabled)
+    {
+        Root.SetActive(enabled);
+
+        _animator.enabled = !enabled;
+        GetComponent<BoxCollider>().enabled = !enabled;
+        GetComponent<CapsuleCollider>().enabled = !enabled;
+    }
+
+    /*
+    private void SetRagdollParts()
+    {
+        Collider[] colliders = this.gameObject.GetComponentsInChildren<Collider>();
+
+        foreach(Collider c in colliders)
+        {
+            if (c.gameObject != this.gameObject)
+            {
+                c.isTrigger = true;
+                RagdollParts.Add(c);
+            }
+        }
+    }
+
+    private void SetColliderSpheres()
+    {
+
+    }
+    */
 }
