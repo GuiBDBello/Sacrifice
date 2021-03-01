@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float Speed = 5f;
-    public float JumpHeight = 2f;
+    public float JumpHeight = 2.5f;
     public float GroundDistance = 0.2f;
     public float DashDistance = 5f;
     public LayerMask Ground;
@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody _body;
     private Vector3 _inputs = Vector3.zero;
     private bool _isGrounded = true;
+    private int _grenadeQuantity = 0;
 
     private void Start()
     {
@@ -71,10 +72,19 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void PickUpGrenade()
+    {
+        _grenadeQuantity++;
+    }
+
     private void ThrowGrenade()
     {
-        GameObject grenade = Instantiate(Grenade, transform.position + (transform.forward), transform.rotation);
-        Rigidbody rb = grenade.GetComponent<Rigidbody>();
-        rb.AddForce(transform.forward * ThrowForce, ForceMode.VelocityChange);
+        if (_grenadeQuantity > 0)
+        {
+            GameObject grenade = Instantiate(Grenade, transform.position + (transform.forward), transform.rotation);
+            Rigidbody rb = grenade.GetComponent<Rigidbody>();
+            rb.AddForce(transform.forward * ThrowForce, ForceMode.VelocityChange);
+            _grenadeQuantity--;
+        }
     }
 }
