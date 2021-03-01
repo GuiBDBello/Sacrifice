@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         _animator = GetComponent<Animator>();
-        TriggerRagdoll(false);
+        SetRagdoll(false);
         //SetRagdollParts();
         //SetColliderSpheres();
     }
@@ -57,6 +57,10 @@ public class PlayerController : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.Mouse0))
             ThrowGrenade();
+        
+        if (Input.GetKeyDown(KeyCode.R)) {
+            SetRagdoll(true);
+        }
     }
 
     private void FixedUpdate()
@@ -93,7 +97,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void TriggerRagdoll(bool enabled)
+    private bool isRagdoll()
+    {
+        return !_animator.enabled;
+    }
+
+    private void SetRagdoll(bool enabled)
     {
         Root.SetActive(enabled);
 
@@ -101,25 +110,4 @@ public class PlayerController : MonoBehaviour
         GetComponent<BoxCollider>().enabled = !enabled;
         GetComponent<CapsuleCollider>().enabled = !enabled;
     }
-
-    /*
-    private void SetRagdollParts()
-    {
-        Collider[] colliders = this.gameObject.GetComponentsInChildren<Collider>();
-
-        foreach(Collider c in colliders)
-        {
-            if (c.gameObject != this.gameObject)
-            {
-                c.isTrigger = true;
-                RagdollParts.Add(c);
-            }
-        }
-    }
-
-    private void SetColliderSpheres()
-    {
-
-    }
-    */
 }
