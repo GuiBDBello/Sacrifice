@@ -21,18 +21,29 @@ public class PlayerController : MonoBehaviour
     private int _grenadeQuantity = 0;
     private Animator _animator;
 
+    private Vector3 _playerStartPosition;
+    private Vector3 _cameraStartPosition;
+
     private void Awake()
     {
         _animator = GetComponent<Animator>();
-        SetRagdoll(false);
+        _body = GetComponent<Rigidbody>();
         //SetRagdollParts();
         //SetColliderSpheres();
     }
 
     private void Start()
     {
-        _body = GetComponent<Rigidbody>();
         _groundChecker = Root.transform;
+        
+        _playerStartPosition = this.gameObject.transform.position;
+        _cameraStartPosition = Camera.main.transform.position;
+        
+        Root.SetActive(false);
+
+        _animator.enabled = true;
+        GetComponent<BoxCollider>().enabled = true;
+        GetComponent<CapsuleCollider>().enabled = true;
     }
 
     private void Update()
@@ -40,7 +51,10 @@ public class PlayerController : MonoBehaviour
         _isGrounded = Physics.CheckSphere(_groundChecker.position, GroundDistance, Ground, QueryTriggerInteraction.Ignore);
 
         _inputs = Vector3.zero;
-        _inputs.x = Input.GetAxis("Horizontal");
+        if (!isRagdoll())
+        {
+            _inputs.x = Input.GetAxis("Horizontal");
+        }
         //_inputs.z = Input.GetAxis("Vertical");
         if (_inputs != Vector3.zero)
         {
@@ -66,6 +80,20 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         _body.MovePosition(_body.position + _inputs * Speed * Time.fixedDeltaTime);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "PickUp")
+        {
+            Debug.Log("PickUp");
+            _grenadeQuantity++;
+            Destroy(other.gameObject);
+        }
+        if (other.gameObject.tag == "Death")
+        {
+            
+        }
     }
 
     private void Jump()
@@ -102,12 +130,27 @@ public class PlayerController : MonoBehaviour
         return !_animator.enabled;
     }
 
-    private void SetRagdoll(bool enabled)
+    public void SetRagdoll(bool isEnabled)
     {
-        Root.SetActive(enabled);
+        Root.SetActive(isEnabled);
 
-        _animator.enabled = !enabled;
-        GetComponent<BoxCollider>().enabled = !enabled;
-        GetComponent<CapsuleCollider>().enabled = !enabled;
+        _body.isKinematic = isEnabled;
+        _animator.enabled = !isEnabled;
+        GetComponent<BoxCollider>().enabled = !isEnabled;
+        GetComponent<CapsuleCollider>().enabled = !isEnabled;
+    }
+
+    private IEnumerator WaitAndRespawn(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        Debug.Log("Voltou");
+        SetRagdoll(false);
+    }
+
+    public void Die()
+    {
+        Debug.Log("Morel");
+        SetRagdoll(true);
+        StartCoroutine(WaitAndRespawn(3.0f));
     }
 }

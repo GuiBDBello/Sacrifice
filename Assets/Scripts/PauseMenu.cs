@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 public class PauseMenu : MonoBehaviour
 {
     public GameObject PauseMenuObject;
+    public GameObject EndgameMenuObject;
 
     private void Start()
     {
@@ -41,5 +42,11 @@ public class PauseMenu : MonoBehaviour
     public void QuitGame()
     {
         SceneManager.LoadScene(0);
+    }
+
+    public void Endgame()
+    {
+        Time.timeScale = 0;
+        PauseMenuObject.SetActive(true);
     }
 }
