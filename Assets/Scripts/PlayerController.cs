@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     public float ThrowForce = 10f;
     //public List<Collider> RagdollParts = new List<Collider>();
     public GameObject Root;
+    public GameObject PlayerPrefab;
     
     private Rigidbody _body;
     private Transform _groundChecker;
@@ -23,6 +24,7 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 _playerStartPosition;
     private Vector3 _cameraStartPosition;
+    private GameObject _canvas;
 
     private void Awake()
     {
@@ -38,6 +40,8 @@ public class PlayerController : MonoBehaviour
         
         _playerStartPosition = this.gameObject.transform.position;
         _cameraStartPosition = Camera.main.transform.position;
+
+        _canvas = GameObject.FindWithTag("Canvas UI");
         
         Root.SetActive(false);
 
@@ -73,7 +77,7 @@ public class PlayerController : MonoBehaviour
             ThrowGrenade();
         
         if (Input.GetKeyDown(KeyCode.R)) {
-            SetRagdoll(true);
+            Die();
         }
     }
 
@@ -90,9 +94,13 @@ public class PlayerController : MonoBehaviour
             _grenadeQuantity++;
             Destroy(other.gameObject);
         }
-        if (other.gameObject.tag == "Death")
+        if (other.gameObject.tag == "Failure")
         {
-            
+            Die();
+        }
+        if (other.gameObject.tag == "Finish")
+        {
+            Finish();
         }
     }
 
@@ -125,6 +133,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void Die()
+    {
+        Debug.Log("Morel");
+        SetRagdoll(true);
+        StartCoroutine(WaitAndRespawn(3.0f));
+    }
+
     private bool isRagdoll()
     {
         return !_animator.enabled;
@@ -134,7 +149,7 @@ public class PlayerController : MonoBehaviour
     {
         Root.SetActive(isEnabled);
 
-        _body.isKinematic = isEnabled;
+        //_body.isKinematic = isEnabled;
         _animator.enabled = !isEnabled;
         GetComponent<BoxCollider>().enabled = !isEnabled;
         GetComponent<CapsuleCollider>().enabled = !isEnabled;
@@ -143,14 +158,18 @@ public class PlayerController : MonoBehaviour
     private IEnumerator WaitAndRespawn(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        Debug.Log("Voltou");
-        SetRagdoll(false);
+        Debug.Log("Voutol");
+        //SetRagdoll(false);
+        GameObject player = Instantiate(PlayerPrefab, _playerStartPosition, PlayerPrefab.transform.rotation);
+        Camera camera = Camera.main;
+        camera.GetComponent<CameraController>().SetPlayer(player);
+        camera.transform.position = _cameraStartPosition;
+        //_body.MovePosition(_playerStartPosition);
+        Destroy(this);
     }
 
-    public void Die()
+    private void Finish()
     {
-        Debug.Log("Morel");
-        SetRagdoll(true);
-        StartCoroutine(WaitAndRespawn(3.0f));
+        _canvas.GetComponent<PauseMenu>().EndgameMenuObject.SetActive(true);
     }
 }

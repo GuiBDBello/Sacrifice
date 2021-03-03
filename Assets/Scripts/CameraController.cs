@@ -17,4 +17,9 @@ public class CameraController : MonoBehaviour
     {
         transform.position = Player.transform.position + offset;
     }
+
+    public void SetPlayer(GameObject player)
+    {
+        Player = player;
+    }
 }
