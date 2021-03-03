@@ -1,12 +1,19 @@
 # Sacrifice
+<p align="center">
+  <img src="Screenshots/Cover.png">
+</p>
 
 Game made for the Game Jam "Wowie Jam 3.0" between February 26th and March 1st of 2021.
 
 Theme: FAILURE IS PROGRESS.
 
-Página do jogo no itch.io: https://guidb.itch.io/
+Página do jogo no itch.io: https://guidb.itch.io/sacrifice
 
 ## Credits
+
+### Animations:
+
+- Mixamo: Breathing Idle, Jog Forward, Jumping.
 
 ### Models:
 
