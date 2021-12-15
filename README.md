@@ -26,7 +26,7 @@ Sometimes you must fail before you succeed.
 
 ### Game Jam
 
-This game was made for the game jam [**Wowie Jam 3.0**](https://itch.io/jam/unexpectedjam) which took place between February 26th and March 1st of 2021.
+This game was made for the game jam [**Wowie Jam 3.0**](https://itch.io/jam/wowie-jam-3) which took place between February 26th and March 1st of 2021.
 
 Theme: **FAILURE IS PROGRESS**.
 
